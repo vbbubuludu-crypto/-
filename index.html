@@ -3,439 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Топ поставщиков алюминиевых банок в Китае (2026)</title>
+    <title>ALEXP1T | Technical Support & Operations Specialist</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Chosen Palette: Warm Neutrals (Stone/Amber) for calm harmony and professional readability -->
-    <!-- Application Structure Plan: Dashboard layout with top KPIs, side-by-side analytical charts (market share, sustainability), and a central interactive supplier directory. Chosen to allow immediate macro-understanding followed by micro-exploration of specific vendors based on user needs (MOQ, Capacity). -->
-    <!-- Visualization & Content Choices: Market Share -> Doughnut Chart (Chart.js) -> Hover interaction -> Shows market dominance. Sustainability Trend -> Bar Chart (Chart.js) -> Hover -> Shows industry shift. Supplier List -> Dynamic DOM cards (JS) -> Search/Filter -> Allows practical vendor selection. NO SVG/Mermaid used. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;600;700&family=JetBrains+Mono:wght@100;300;500;700&display=swap');
+        
+        :root {
+            --bg: #030303;
+            --bg-secondary: #0a0a0a;
+            --accent: #ffffff;
+            --accent-dim: rgba(255, 255, 255, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(255, 255, 255, 0.15);
+            --amber-accent: #d4af37;
+        }
+
+        * {
+            cursor: none; 
+        }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #faf8f5;
-            color: #3f3f46;
-        }
-        .chart-container {
+            background-color: var(--bg);
+            color: var(--accent);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
             position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f5f5f4; 
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #d6d3d1; 
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #a8a29e; 
-        }
-        .modal-active {
-            overflow: hidden;
-        }
-        .modal-overlay {
-            transition: opacity 0.3s ease-out;
-            opacity: 0;
+
+
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none;
-            z-index: 50;
+            z-index: 9997;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+
+        .cursor-dot {
+            width: 6px; height: 6px;
+            background: white; border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
         }
-        .modal-content {
-            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-            transform: scale(0.95);
-            opacity: 0;
+        .cursor-outline {
+            width: 30px; height: 30px;
+            border: 1px solid rgba(255,255,255,0.4); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s;
+            transition-timing-function: ease-out;
         }
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-            opacity: 1;
+        a:hover ~ .cursor-outline, button:hover ~ .cursor-outline, .hover-trigger:hover ~ .cursor-outline {
+            width: 50px; height: 50px;
+            border-color: white; background: rgba(255,255,255,0.05);
+        }
+
+
+        .noir-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.4s;
+        }
+        .noir-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--glow), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.7s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .noir-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .noir-card:hover::before { left: 150%; }
+
+
+        .grid-pattern {
+            position: fixed; inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+        }
+
+
+        #loader {
+            position: fixed; inset: 0; background: #000;
+            z-index: 10000; display: flex; flex-direction: column;
+            justify-content: flex-end; padding: 40px;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .terminal-text { color: #fff; opacity: 0.8; margin: 4px 0; }
+
+
+        @media print {
+            body {
+                background-color: #030303 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .grid-pattern, .cursor-dot, .cursor-outline, #loader, nav {
+                display: none !important;
+            }
+            .noir-card {
+                background-color: #0a0a0a !important;
+                border: 1px solid rgba(255,255,255,0.1) !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            .container-print {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body>
 
-    <nav class="bg-stone-900 text-stone-50 py-4 shadow-md sticky top-0 z-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl">🏭</span>
-                <h1 class="text-xl font-semibold tracking-wide">ChinaCanAnalytics 2026</h1>
+
+    <div class="noise-overlay"></div>
+
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+
+    <div class="grid-pattern"></div>
+
+
+    <div id="loader" class="mono text-xs md:text-sm">
+        <div id="terminal-output"></div>
+        <div class="mt-4 flex items-center gap-2 text-white">
+            <i data-lucide="terminal" class="w-4 h-4"></i>
+            <span class="typing-cursor">Составление информации обо мне, демонстирующей мою пользу для ваашего бизнеса...</span>
+        </div>
+    </div>
+
+  
+    <nav class="fixed top-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl transition-all duration-300" id="navbar">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-7 h-7 bg-white rounded flex items-center justify-center">
+                    <span class="text-black text-[12px] font-bold">P</span>
+                </div>
+                <span class="mono text-[10px] uppercase tracking-widest font-bold">Александр Пителин</span>
             </div>
-            <div class="hidden md:flex space-x-6 text-sm font-medium">
-                <a href="#overview" class="hover:text-amber-400 transition-colors">Обзор рынка</a>
-                <a href="#charts" class="hover:text-amber-400 transition-colors">Аналитика</a>
-                <a href="#directory" class="hover:text-amber-400 transition-colors">База поставщиков</a>
+            <div class="text-[9px] mono uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                <span>СТАТУС:</span>
+                <span class="text-white font-bold bg-white/10 px-2 py-0.5 rounded">АКТУАЛЬНАЯ АНКЕТА</span>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+    <main class="max-w-4xl mx-auto px-6 pt-32 pb-24 container-print">
         
-        <section id="overview" class="mb-12 scroll-mt-20">
-            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-stone-200">
-                <h2 class="text-3xl font-bold text-stone-800 mb-4">Рынок алюминиевой тары КНР: Лидеры отрасли</h2>
-                <p class="text-stone-600 leading-relaxed mb-8 text-lg">
-                    Данный интерактивный отчет предоставляет актуальную на 2026 год информацию о крупнейших и наиболее надежных производителях алюминиевых банок в Китае. Сектор консолидируется: топ-4 компании контролируют более 80% мощностей. Основной фокус индустрии в текущем году — снижение углеродного следа, переход на переработанный алюминий и уменьшение веса банки (lightweighting). Ниже представлены ключевые метрики и проверенные партнеры для B2B контрактов.
+
+        <div class="border-b border-white/10 pb-10 mb-12 relative">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <h2 class="mono text-zinc-500 text-[9px] uppercase tracking-[0.3em]">Чем я могу быть полезен для вашего бизнеса?</h2>
+            </div>
+            
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-6">
+                АНКЕТА КАНДИДАТА.<br>
+                <span class="text-zinc-500">РАЗБОР ВАКАНСИИ. ДЕМОНСТРАЦИЯ МОИХ НАВЫКОВ.</span>
+            </h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 text-xs mono">
+                <div class="border-l border-white/10 pl-4 py-1">
+                    <span class="text-zinc-500 block">Кандидат</span>
+                    <span class="text-white font-semibold">Александр Пителин</span>
+                </div>
+                <div class="border-l border-white/10 pl-4 py-1">
+                    <span class="text-zinc-500 block">Позиция</span>
+                    <span class="text-white font-semibold">Оператор (технической) чат-поддержки</span>
+                </div>
+                <div class="border-l border-white/10 pl-4 py-1">
+                    <span class="text-zinc-500 block">Направление</span>
+                    <span class="text-white font-semibold">Сервисное обслуживание|Системная интеграция</span>
+                </div>
+            </div>
+        </div>
+
+     
+        <div class="space-y-8">
+            
+
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.01]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Что меня больше всего привлекает в вашей вакансии?</h3>
+                    </div>
+                    <div class="text-zinc-500"><i data-lucide="sparkles" class="w-4 h-4"></i></div>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                    В вашем предложении меня привлекают три ключевых вектора развития:
                 </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-100 flex flex-col justify-center items-center text-center hover:shadow-md transition-shadow">
-                        <span class="text-4xl mb-2">📈</span>
-                        <h3 class="text-stone-500 text-sm font-semibold uppercase tracking-wider">Общий объем рынка (Топ-5)</h3>
-                        <p class="text-3xl font-bold text-stone-800 mt-1">37.5 <span class="text-lg font-medium text-stone-500">млрд банок/год</span></p>
-                    </div>
-                    <div class="bg-amber-50 rounded-xl p-6 border border-amber-100 flex flex-col justify-center items-center text-center hover:shadow-md transition-shadow">
-                        <span class="text-4xl mb-2">♻️</span>
-                        <h3 class="text-amber-700 text-sm font-semibold uppercase tracking-wider">Доля переработанного сырья</h3>
-                        <p class="text-3xl font-bold text-amber-900 mt-1">72<span class="text-lg font-medium">%</span></p>
-                    </div>
-                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-100 flex flex-col justify-center items-center text-center hover:shadow-md transition-shadow">
-                        <span class="text-4xl mb-2">⏱️</span>
-                        <h3 class="text-stone-500 text-sm font-semibold uppercase tracking-wider">Средний цикл производства</h3>
-                        <p class="text-3xl font-bold text-stone-800 mt-1">14-25 <span class="text-lg font-medium text-stone-500">дней</span></p>
-                    </div>
-                </div>
+                <ul class="space-y-3 text-xs mono text-zinc-400">
+                    <li class="flex items-start gap-3">
+                        <span class="text-white font-bold mt-0.5">// 01 //</span>
+                        <span><strong>Создание ценности для пользователей:</strong> Работа с технологичными решениями, которые помогают людям не сталкиваться с ошибками при ипользовании вашего продукта. Как специалисту с техническим бэкграундом, мне интересно помогать пользователям преодолевать технические барьеры и увеличивать свой опыт в этом вопросе</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-white font-bold mt-0.5">// 02 //</span>
+                        <span><strong>Гибридный формат роли (Поддержка + Аккаунтинг):</strong> Мне ценно не просто обрабатывать входящие тикеты, а комплексно сопровождать пользователя, выстраивать доверительные отношения, помогать как оперативным решением багов, так и поддержкой на ключевых этапах.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-white font-bold mt-0.5">// 03 //</span>
+                        <span><strong>Международный вектор:</strong> Возможность применять английский язык для коммуникации, интеграции и поддержки зарубежных пользователей, что расширяет возможности для развития проекта на глобальном рынке.</span>
+                    </li>
+                </ul>
             </div>
-        </section>
 
-        <section id="charts" class="mb-12 scroll-mt-20">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
-                    <h3 class="text-xl font-bold text-stone-800 mb-2">Распределение рынка (По производственным мощностям)</h3>
-                    <p class="text-sm text-stone-500 mb-6">Доля ведущих корпораций в общем объеме производства банок для напитков на территории материкового Китая.</p>
-                    <div class="chart-container flex items-center justify-center">
-                        <canvas id="marketShareChart"></canvas>
-                    </div>
-                </div>
 
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
-                    <h3 class="text-xl font-bold text-stone-800 mb-2">Индекс экологичности (2022-2026)</h3>
-                    <p class="text-sm text-stone-500 mb-6">Динамика использования вторичного алюминия и внедрения энергосберегающих технологий у топ-поставщиков.</p>
-                    <div class="chart-container flex items-center justify-center">
-                        <canvas id="sustainabilityChart"></canvas>
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.02]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Какие есть сложности у моей работы и как я к ним подхожу?</h3>
                     </div>
+                    <div class="text-zinc-500"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
                 </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                    Основная сложность кроется в сочетании высокой технической вариативности проектов и эмоционального состояния пользователей:
+                </p>
+                <ul class="space-y-4 text-xs text-zinc-400">
+                    <li class="border-l border-white/10 pl-4">
+                        <p class="font-bold text-white mb-1">Разнообразие пользовательских конфигураций:</p>
+                        <p class="text-zinc-500 leading-relaxed">Пользователи работают с продуктом в самых разных конфигурациях и технической среде. Поддержке важно быстро вникать в суть проблемы, обладать широким кругозором и логикой, чтобы локализовать баг, даже не будучи разработчиком данного решения.</p>
+                    </li>
+                    <li class="border-l border-white/10 pl-4">
+                        <p class="font-bold text-white mb-1">Эмоциональный фактор обращений:</p>
+                        <p class="text-zinc-500 leading-relaxed">Столкнувшись с багом или технической неполадкой, пользователи часто пишут в поддержку на эмоциях, особенно если от работы сервиса зависят их личные или бизнес-процессы. Сложность и одновременно главная задача менеджера — не просто решить техническую проблему, а проявить эмпатию, снизить градус паники и вернуть человеку уверенность в надежности платформы.</p>
+                    </li>
+                </ul>
             </div>
-        </section>
 
-        <section id="directory" class="mb-12 scroll-mt-20">
-            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col lg:flex-row h-auto lg:h-[600px]">
+
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.03]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Демонстрация того, насколько важна клиентоориентированность для бизнеса:</h3>
+                    </div>
+                    <div class="text-zinc-500"><i data-lucide="message-square" class="w-4 h-4"></i></div>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                    Ответ, который оттолкнет потенциального клиента : <em>«Попробуйте ещё раз, скорее всего вы что-то сделали не так. У нас всё работает корректно.»</em>
+                </p>
+                <p class="text-zinc-500 text-xs mono uppercase tracking-wider mb-3">//Мой вариант ответа, который восстановит репутацию компании в его глазах: </p>
                 
-                <div class="w-full lg:w-1/3 bg-stone-50 border-b lg:border-b-0 lg:border-r border-stone-200 flex flex-col">
-                    <div class="p-6 border-b border-stone-200 bg-white">
-                        <h3 class="text-xl font-bold text-stone-800 mb-4">Интерактивный каталог</h3>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-stone-400">🔍</span>
-                            <input type="text" id="searchInput" placeholder="Поиск по названию или сертификату..." class="w-full pl-10 pr-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors">
+
+                <div class="bg-black border border-white/10 rounded-lg p-5">
+                    <p class="text-xs text-zinc-400 leading-relaxed mb-3">
+                        «Здравствуйте! Давайте вместе разберемся, почему возникла эта сложность. На нашей стороне сейчас всё работает в штатном режиме, но иногда подобные ошибки могут происходить из-за локальных факторов.
+                    </p>
+                    <p class="text-xs text-zinc-400 leading-relaxed mb-3">
+                        Пожалуйста, попробуйте выполнить несколько простых шагов:<br>
+                        1. Откройте эту же страницу в режиме «Инкогнито» или попробуйте зайти через другой браузер.<br>
+                        2. Проверьте, не включены ли у вас VPN-сервисы или расширения-блокировщики рекламы (иногда они могут препятствовать загрузке скриптов).
+                    </p>
+                    <p class="text-xs text-zinc-400 leading-relaxed">
+                        Если эти действия не помогут, пожалуйста, пришлите скриншот экрана с ошибкой (или скриншот вкладки Console в панели разработчика по кнопке F12). Напишите, какое устройство и браузер вы используете — я сразу же подключусь к детальной диагностике и помогу всё настроить!»
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.04]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Умение просто объяснить сложное: например, «Что такое API?»</h3>
+                    </div>
+                    <div class="text-zinc-500"><i data-lucide="cpu" class="w-4 h-4"></i></div>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                    Представьте, что вы пришли в ресторан.
+                </p>
+                <ul class="space-y-2 text-xs text-zinc-500 mb-6">
+                    <li>• <strong>Вы (пользователь)</strong> сидите за столиком и хотите заказать пасту.</li>
+                    <li>• <strong>Кухня ресторана (сервер или база данных)</strong> — это место, где хранится вся информация и готовится блюда. Но вы не можете зайти на кухню напрямую и начать готовить сами.</li>
+                    <li>• <strong>Официант — это и есть API</strong> (Application Programming Interface).</li>
+                </ul>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                    Официант подходит к вам, принимает заказ (ваш запрос), уносит его на кухню, а затем возвращает вам готовое блюдо (результат работы программы).
+                </p>
+                
+                <!-- Код-терминал -->
+                <div class="bg-black border border-white/10 rounded-lg p-5 mono text-[11px] text-zinc-400">
+                    <p class="text-white mb-2">// Пример для маркетолога или дизайнера:</p>
+                    <p class="leading-relaxed">
+                        Если вы хотите, чтобы на вашем сайте показывалась погода в реальном времени, вам не нужно запускать собственный метеорологический спутник. Вы берете готовое API сервиса погоды. Ваш сайт делает запрос к этому API: <br>
+                        <span class="text-zinc-200">API_Request("weather_today", locale="London")</span> <br>
+                        а API мгновенно возвращает ответ: <br>
+                        <span class="text-zinc-200">API_Response(temp="18 C", condition="sunny")</span> <br>
+                        Ваш сайт просто красиво выводит эту цифру на экран. Вы сэкономили недели работы за 5 минут.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.05]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Проблема клиента не воспроизводится. Алгоритм действий</h3>
+                    </div>
+                    <div class="text-zinc-500"><i data-lucide="workflow" class="w-4 h-4"></i></div>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+                    Когда ошибка происходит у одного пользователя и не воспроизводится локально, проблема кроется в уникальном окружении или состоянии его учетной записи. Ход моих действий:
+                </p>
+                
+                <div class="space-y-4 text-xs">
+                    <div class="flex gap-4">
+                        <span class="mono text-zinc-500 font-bold mt-0.5">[ШАГ_01]</span>
+                        <div>
+                            <span class="text-white font-bold block mb-1">Регистрация обращения и снижение напряжения</span>
+                            <span class="text-zinc-500 leading-relaxed">Фиксирую запрос, сообщаю пользователю, что мы уже занимаемся его вопросом, объясняю, что для его индивидуальной проблемы потребуется провести детальный разбор.</span>
                         </div>
                     </div>
-                    <div class="overflow-y-auto custom-scrollbar flex-grow p-4 space-y-3" id="supplierList">
+                    <div class="flex gap-4">
+                        <span class="mono text-zinc-500 font-bold mt-0.5">[ШАГ_02]</span>
+                        <div>
+                            <span class="text-white font-bold block mb-1">Сбор технических метаданных окружения</span>
+                            <span class="text-zinc-500 leading-relaxed">Запрашиваю точные технические параметры: тип устройства, операционную систему, версию браузера, активность VPN или корпоративного прокси. Прошу прислать скриншот вкладки Console (F12) или записать короткое видео.</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="mono text-zinc-500 font-bold mt-0.5">[ШАГ_03]</span>
+                        <div>
+                            <span class="text-white font-bold block mb-1">Анализ серверных логов</span>
+                            <span class="text-zinc-500 leading-relaxed">Ищу логи действий данного пользователя по его ID или email в системе мониторинга (например, Sentry/Datadog). Проверяю, отдавал ли сервер ошибки (4xx, 5xx) в момент отправки его запросов.</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="mono text-zinc-500 font-bold mt-0.5">[ШАГ_04]</span>
+                        <div>
+                            <span class="text-white font-bold block mb-1">Имитация среды (Репликация)</span>
+                            <span class="text-zinc-500 leading-relaxed">Тестирую сценарий в абсолютно идентичной среде (настраивая тот же браузер и ОС), искусственно занижаю скорость интернета для проверки таймаутов соединения.</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="mono text-zinc-500 font-bold mt-0.5">[ШАГ_05]</span>
+                        <div>
+                            <span class="text-white font-bold block mb-1">Проверка состояния профиля</span>
+                            <span class="text-zinc-500 leading-relaxed">Изучаю настройки конкретной учетной записи в базе данных на наличие аномалий (незаполненные поля, устаревший статус тарифа, ошибки синхронизации).</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="mono text-zinc-500 font-bold mt-0.5">[ШАГ_06]</span>
+                        <div>
+                            <span class="text-white font-bold block mb-1">Вынесение вердикта</span>
+                            <span class="text-zinc-500 leading-relaxed">Если баг локальный (например, блокировщик рекламы режет скрипт оплаты) — даю инструкцию. Если системный — описываю баг-репорт для технической команды с шагами репликации и сопровождаю клиента до полного устранения ошибки.</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="w-full lg:w-2/3 p-8 bg-white flex flex-col" id="supplierDetails">
-                    <div class="flex-grow flex flex-col justify-center items-center text-stone-400 text-center h-full min-h-[300px]">
-                        <span class="text-6xl mb-4">👆</span>
-                        <p class="text-xl">Выберите поставщика из списка слева для просмотра детальной информации.</p>
+
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.06]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Самый важный навык менеджера технической поддержки</h3>
+                    </div>
+                    <div class="text-zinc-500"><i data-lucide="shield" class="w-4 h-4"></i></div>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+                    Я считаю, что ключевой навык — это <strong>эмпатия, подкрепленная системной технической логикой</strong>.
+                </p>
+                <p class="text-zinc-500 text-xs leading-relaxed mb-3">
+                    Один лишь технический навык без эмпатии превращает поддержку в холодный, безразличный механизм. С другой стороны, эмпатия без технического понимания сделает общение очень вежливым, но совершенно бесполезным для решения технических неполадок.
+                </p>
+                <p class="text-zinc-500 text-xs leading-relaxed">
+                    Именно баланс этих двух качеств позволяет оператору видеть реальную проблему за эмоциями клиента, системно диагностировать баги и объяснять сложнейшие решения простыми словами, оставляя у клиента ощущение заботы и надежности.
+                </p>
+            </div>
+
+
+            <div class="noir-card p-8 rounded-xl">
+                <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="mono text-xs text-zinc-500">[П.07]</span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">Почему вам стоит выбрать именно меня?</h3>
+                    </div>
+                    <div class="text-zinc-500"><i data-lucide="user-check" class="w-4 h-4"></i></div>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+                    Мой опыт и стек соответствуют требованиям роли по трем основным направлениям:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                    <div class="border-t border-white/10 pt-4">
+                        <h4 class="font-bold text-white mb-2">Технический бэкграунд</h4>
+                        <p class="text-zinc-500 leading-relaxed">Понимаю архитектуру веб-приложений и интеграций. Быстро локализую проблемы и общаюсь с девелоперами на одном языке.</p>
+                    </div>
+                    <div class="border-t border-white/10 pt-4">
+                        <h4 class="font-bold text-white mb-2">Навыки автоматизации</h4>
+                        <p class="text-zinc-500 leading-relaxed">Умею программировать и настраивать ИИ-ассистентов. Могу автоматизировать рутину в саппорте (до 60%), экономя ресурсы компании.</p>
+                    </div>
+                    <div class="border-t border-white/10 pt-4">
+                        <h4 class="font-bold text-white mb-2">Текстовая коммуникация</h4>
+                        <p class="text-zinc-500 leading-relaxed">Сфокусирован на текстовой поддержке в чатах. Готов сопровождать пользователей вашего продукта на английском языке.</p>
                     </div>
                 </div>
+            </div>
+
+        </div>
+
+
+        <div class="footer-card">
+            <div class="footer-logo">
+               
 
             </div>
-        </section>
+            <div class="footer-contacts">
+                <p>Telegram: <a href="https://t.me/ALEXP1T" target="_blank">@ALEXP1T</a></p>
+                <p>Резюме: <a href="https://ryazan.hh.ru/resume/171c538cff1079686a0039ed1f754e584e6342?from=share_ios" target="_blank">hh.ru/ALEXP1T</a></p>
+            </div>
+        </div>
 
     </main>
 
-    <footer class="bg-stone-900 text-stone-400 py-8 text-center text-sm">
-        <p>&copy; 2026 Аналитический центр упаковочной индустрии. Все данные верифицированы.</p>
+
+    <footer class="py-8 border-t border-white/5 bg-black relative z-10">
+        <div class="max-w-4xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3 opacity-50">
+                <div class="w-4 h-4 bg-white flex items-center justify-center">
+                    <span class="text-black text-[8px] font-bold">P</span>
+                </div>
+                <span class="mono text-[10px] uppercase tracking-widest">Alex Pitelin</span>
+            </div>
+            <p class="mono text-[10px] text-zinc-600 tracking-[0.3em] uppercase">Скорость. Качество. Поддержка. </p>
+        </div>
     </footer>
 
     <script>
-        const suppliers = [
-            {
-                id: 1,
-                name: "ORG Technology Co., Ltd.",
-                status: "Лидер рынка",
-                capacity: "12 млрд банок/год",
-                moq: "500,000 шт.",
-                certs: "ISO 9001, FSSC 22000, Sedex",
-                focus: "Инновационные формы, пиво, энергетики",
-                ecoScore: 85,
-                leadTime: "14-20 дней",
-                website: "http://www.orgtech.cn/en/",
-                description: "ORG Technology является абсолютным лидером в производстве металлической упаковки в Китае. Основной стратегический партнер Red Bull China. Компания обладает мощнейшей R&D базой, предлагает печать высокой четкости и разработку кастомных форм банок (sleek, slim, standard).",
-                features: ["Ультра-тонкий алюминий", "Голографическая печать", "Полный цикл контроля качества", "15 заводов по всему Китаю"]
-            },
-            {
-                id: 2,
-                name: "CPMC Holdings Limited",
-                status: "Премиум качество",
-                capacity: "9.5 млрд банок/год",
-                moq: "300,000 шт.",
-                certs: "ISO 9001, BRC, ISO 14001, HACCP",
-                focus: "Чайные напитки, кофе, соки, консервы",
-                ecoScore: 80,
-                leadTime: "15-25 дней",
-                website: "http://www.cofcopack.com/",
-                description: "Входит в структуру государственной корпорации COFCO. Отличается высочайшими стандартами безопасности пищевой продукции. CPMC активно инвестирует в экологичное производство и предлагает банки с внутренним покрытием BPA-free последнего поколения.",
-                features: ["BPA-NI покрытия", "Поддержка государственных экспортных программ", "Интегрированная логистика", "Широкий спектр диаметров крышек"]
-            },
-            {
-                id: 3,
-                name: "Baosteel Packaging",
-                status: "Промышленный гигант",
-                capacity: "8 млрд банок/год",
-                moq: "500,000 шт.",
-                certs: "ISO 9001, FDA Compliance",
-                focus: "Газированные напитки, пиво массового сегмента",
-                ecoScore: 75,
-                leadTime: "12-18 дней",
-                website: "http://www.baosteelpack.com/",
-                description: "Подразделение металлургического гиганта Baowu Steel Group. Благодаря прямому доступу к сырью, компания предлагает одни из самых конкурентных цен при гигантских объемах заказов. Лидер по скорости производства стандартных объемов 330мл и 500мл.",
-                features: ["Собственная сырьевая база", "Минимальная стоимость на тиражах от 1 млн", "Высокоскоростные линии", "Стандартизированный ассортимент"]
-            },
-            {
-                id: 4,
-                name: "Shengxing Group",
-                status: "Надежный экспортер",
-                capacity: "5 млрд банок/год",
-                moq: "200,000 шт.",
-                certs: "ISO 9001, ISO 14001, OHSAS 18001",
-                focus: "Энергетические напитки, крафтовые соки",
-                ecoScore: 70,
-                leadTime: "20-30 дней",
-                website: "http://www.fjshengxing.com/en/",
-                description: "Компания с сильным фокусом на международные рынки. Shengxing предлагает гибкие условия для средних партий и активно работает с клиентами из СНГ, Ближнего Востока и Юго-Восточной Азии. Хорошая экспертиза в сложной многоцветной литографии.",
-                features: ["Отдел ВЭД с опытом экспорта в РФ/СНГ", "Гибкость в настройке линий", "Поддержка малых форматов (250мл)", "Англоязычная документация"]
-            },
-            {
-                id: 5,
-                name: "Zhongshan Packaging",
-                status: "Бутиковое производство",
-                capacity: "3.5 млрд банок/год",
-                moq: "100,000 шт.",
-                certs: "ISO 9001",
-                focus: "Крафтовое пиво, нишевые напитки, малые партии",
-                ecoScore: 65,
-                leadTime: "25-35 дней",
-                website: "http://www.zhongshan-pack.com/",
-                description: "Уникальный игрок среди гигантов. Zhongshan специализируется на работе с небольшими брендами и крафтовыми пивоварнями. Они предлагают самый низкий минимальный порог заказа (MOQ) среди проверенных поставщиков и уникальные тактильные покрытия (матовые, софт-тач).",
-                features: ["Самый низкий MOQ в топ-5", "Спецэффекты печати (матовый, термохромный)", "Персонализированный сервис", "Помощь в дизайне"]
-            }
+        lucide.createIcons();
+
+        const loader = document.getElementById('loader');
+        const termOut = document.getElementById('terminal-output');
+        const bootSequence = [
+            "Initiating connection to selection database...",
+            "Decrypting selection criteria: L2-SUPPORT... OK",
+            "Retrieving candidate profile: ALEXP1T [Verified]",
+            "Loading prompt and technical support modules...",
+            "Applying Noir Elite interface styles...",
+            "Loading complete. Dossier open."
         ];
 
-        const ctxMarket = document.getElementById('marketShareChart').getContext('2d');
-        const marketShareChart = new Chart(ctxMarket, {
-            type: 'doughnut',
-            data: {
-                labels: ['ORG Technology', 'CPMC Holdings', 'Baosteel Packaging', 'Shengxing Group', 'Zhongshan', 'Прочие'],
-                datasets: [{
-                    data: [32, 25, 21, 13, 9, 15],
-                    backgroundColor: [
-                        '#d97706', 
-                        '#f59e0b', 
-                        '#fbbf24', 
-                        '#78716c', 
-                        '#a8a29e', 
-                        '#e7e5e4'  
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            font: { family: "'Segoe UI', sans-serif" },
-                            color: '#57534e'
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return ' ' + context.label + ': ' + context.raw + '%';
-                            }
-                        }
-                    }
-                },
-                cutout: '65%'
+        let line = 0;
+        function printBootSequence() {
+            if (line < bootSequence.length) {
+                const p = document.createElement('p');
+                p.className = 'terminal-text';
+                p.textContent = `> ${bootSequence[line]}`;
+                termOut.appendChild(p);
+                line++;
+                setTimeout(printBootSequence, Math.random() * 120 + 40);
+            } else {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    loader.style.transform = 'translateY(-20px)';
+                    setTimeout(() => loader.remove(), 800);
+                }, 500);
             }
-        });
-
-        const ctxEco = document.getElementById('sustainabilityChart').getContext('2d');
-        const sustainabilityChart = new Chart(ctxEco, {
-            type: 'bar',
-            data: {
-                labels: ['2022', '2023', '2024', '2025', '2026 (План)'],
-                datasets: [
-                    {
-                        label: 'Использование вторичного алюминия (%)',
-                        data: [45, 52, 60, 68, 72],
-                        backgroundColor: '#fbbf24',
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Снижение веса банки (%) к базе 2020',
-                        data: [2, 5, 8, 11, 14],
-                        backgroundColor: '#a8a29e',
-                        borderRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#f5f5f4' },
-                        ticks: { color: '#78716c' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#78716c' }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { color: '#57534e' }
-                    }
-                }
-            }
-        });
-
-        const supplierListEl = document.getElementById('supplierList');
-        const searchInput = document.getElementById('searchInput');
-        const detailsEl = document.getElementById('supplierDetails');
-
-        function renderList(data) {
-            supplierListEl.innerHTML = '';
-            if (data.length === 0) {
-                supplierListEl.innerHTML = '<p class="text-stone-500 text-center py-4">Ничего не найдено</p>';
-                return;
-            }
-            data.forEach(supplier => {
-                const card = document.createElement('div');
-                card.className = 'bg-white p-4 rounded-xl border border-stone-200 cursor-pointer hover:border-amber-400 hover:shadow-md transition-all group';
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-1">
-                        <h4 class="font-bold text-stone-800 group-hover:text-amber-700 transition-colors">${supplier.name}</h4>
-                        <span class="text-xs font-semibold bg-stone-100 text-stone-600 px-2 py-1 rounded-full">${supplier.id}</span>
-                    </div>
-                    <p class="text-xs text-amber-600 font-medium mb-2">${supplier.status}</p>
-                    <div class="text-sm text-stone-600 space-y-1">
-                        <p><span class="font-medium">MOQ:</span> ${supplier.moq}</p>
-                        <p class="truncate"><span class="font-medium">Сертификаты:</span> ${supplier.certs}</p>
-                    </div>
-                `;
-                card.addEventListener('click', () => showDetails(supplier));
-                supplierListEl.appendChild(card);
-            });
         }
+        window.onload = printBootSequence;
 
-        function showDetails(supplier) {
-            document.querySelectorAll('#supplierList > div').forEach(el => {
-                el.classList.remove('border-amber-500', 'ring-2', 'ring-amber-200');
-            });
-            event.currentTarget.classList.add('border-amber-500', 'ring-2', 'ring-amber-200');
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
 
-            let featuresHtml = supplier.features.map(f => `<li class="flex items-center text-stone-700 mb-2"><span class="text-amber-500 mr-2">✓</span> ${f}</li>`).join('');
-
-            detailsEl.innerHTML = `
-                <div class="animate-fade-in flex flex-col h-full">
-                    <div class="flex justify-between items-start mb-6 border-b border-stone-100 pb-6">
-                        <div>
-                            <h2 class="text-3xl font-bold text-stone-800 mb-2">${supplier.name}</h2>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-sm font-semibold px-3 py-1 rounded-full">${supplier.status}</span>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-stone-500 font-medium uppercase tracking-wide">Рейтинг ЭКО</p>
-                            <div class="flex items-center justify-end mt-1">
-                                <span class="text-2xl font-bold text-emerald-600">${supplier.ecoScore}</span>
-                                <span class="text-stone-400 text-sm ml-1">/100</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="text-stone-600 text-lg leading-relaxed mb-8">${supplier.description}</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div class="bg-stone-50 p-5 rounded-xl border border-stone-200">
-                            <h4 class="text-xs text-stone-500 uppercase font-bold tracking-wider mb-3">Производство</h4>
-                            <ul class="space-y-3">
-                                <li class="flex justify-between items-center"><span class="text-stone-600">Мощность:</span> <span class="font-semibold text-stone-800">${supplier.capacity}</span></li>
-                                <li class="flex justify-between items-center"><span class="text-stone-600">Мин. заказ (MOQ):</span> <span class="font-semibold text-stone-800">${supplier.moq}</span></li>
-                                <li class="flex justify-between items-center"><span class="text-stone-600">Сроки поставки:</span> <span class="font-semibold text-stone-800">${supplier.leadTime}</span></li>
-                            </ul>
-                        </div>
-                        <div class="bg-stone-50 p-5 rounded-xl border border-stone-200">
-                            <h4 class="text-xs text-stone-500 uppercase font-bold tracking-wider mb-3">Компетенции</h4>
-                            <ul class="space-y-3">
-                                <li class="flex flex-col"><span class="text-stone-600 text-sm">Сертификация:</span> <span class="font-semibold text-stone-800">${supplier.certs}</span></li>
-                                <li class="flex flex-col mt-2"><span class="text-stone-600 text-sm">Фокусные продукты:</span> <span class="font-semibold text-stone-800">${supplier.focus}</span></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="mt-auto">
-                        <h4 class="text-lg font-bold text-stone-800 mb-4">Ключевые преимущества:</h4>
-                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                            ${featuresHtml}
-                        </ul>
-                        <div class="mt-8 pt-6 border-t border-stone-100 flex justify-end">
-                            <a href="${supplier.website}" target="_blank" rel="noopener noreferrer" class="bg-stone-800 hover:bg-stone-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 flex items-center gap-2">
-                                <span>Запросить на сайте поставщика</span>
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-            `;
-            document.head.appendChild(style);
-        }
-
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = suppliers.filter(s => 
-                s.name.toLowerCase().includes(query) || 
-                s.certs.toLowerCase().includes(query) ||
-                s.focus.toLowerCase().includes(query)
-            );
-            renderList(filtered);
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`; cursorDot.style.top = `${posY}px`;
+            setTimeout(() => {
+                cursorOutline.style.left = `${posX}px`; cursorOutline.style.top = `${posY}px`;
+            }, 50);
         });
 
-        renderList(suppliers);
-        
-        setTimeout(() => {
-            if(supplierListEl.firstElementChild) {
-                supplierListEl.firstElementChild.click();
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-black/80', 'backdrop-blur-xl', 'border-white/10');
+            } else {
+                navbar.classList.remove('bg-black/80', 'backdrop-blur-xl', 'border-white/10');
             }
-        }, 300);
-
+        });
     </script>
 </body>
 </html>
